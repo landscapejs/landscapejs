@@ -1,0 +1,283 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: 'BebasNeue-Regular';
+    src: url('/fonts/BebasNeue-Regular.ttf') format('truetype'); 
+}
+@font-face {
+    font-family: 'Bungee-Regular';
+    src: url('/fonts/Bungee-Regular.ttf') format('truetype'); 
+}
+@font-face {
+    font-family: 'AlfaSlabOne-Regular';
+    src: url('/fonts/AlfaSlabOne-Regular.ttf') format('truetype'); 
+}
+@font-face {
+    font-family: 'FunnelSans-Variable';
+    src: url('/fonts/FunnelSans-VariableFont_wght.ttf') format('truetype'); 
+}
+@font-face {
+    font-family: 'SUSE-Variable';
+    src: url('/fonts/SUSE-VariableFont_wght.ttf') format('truetype'); 
+}
+@font-face {
+    font-family: 'Ultra-Regular';
+    src: url('/fonts/Ultra-Regular.ttf') format('truetype'); 
+}
+@font-face {
+    font-family: 'ZalandoSansExpanded-Variable';
+    src: url('/fonts/ZalandoSansExpanded-VariableFont_wght.ttf') format('truetype'); 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a2e;
+}
+
+canvas {
+    display: block;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    animation: fadeInAnimation ease 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in;
+    width: var(--w);
+    height: var(--h);
+}
+
+#landscapejs {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@property --w_raw {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 100vw;
+}
+
+@property --h_raw {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 100vh;
+}
+
+:root {
+    --w: tan(atan2(var(--w_raw), 1px));
+    --h: tan(atan2(var(--h_raw), 1px));
+}
+
+
+/* ─── CORNER DECORATIONS ─── */
+.corner {
+    opacity: 0;
+}
+
+.corner-tl,
+.corner-br {
+    position: fixed;
+    z-index: 20;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(253, 230, 138, 0.3);
+    font-family: 'DM Mono', monospace;
+}
+
+.corner-tl {
+    top: 1.5rem;
+    left: 1.5rem;
+}
+
+.corner-br {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    text-align: right;
+}
+
+/* Scroll indicator */
+.scroll-hint {
+    opacity: 0;
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    /* opacity: 0.4; */
+    animation: fadeUp 2s 1.5s both;
+}
+
+.scroll-hint span {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    /* color: rgba(253, 230, 138, 0.6); */
+}
+
+.scroll-line {
+    width: 1px;
+    height: 40px;
+}
+
+.explore {
+    position: absolute;
+    top: 100vh;
+}
+
+@keyframes scrollDrop {
+    0% {
+        transform: scaleY(0);
+        transform-origin: top;
+    }
+
+    50% {
+        transform: scaleY(1);
+        transform-origin: top;
+    }
+
+    51% {
+        transform: scaleY(1);
+        transform-origin: bottom;
+    }
+
+    100% {
+        transform: scaleY(0);
+        transform-origin: bottom;
+    }
+}
+
+@keyframes titleReveal {
+    from {
+        opacity: 0;
+        transform: translateY(40px) skewY(2deg);
+        filter: drop-shadow(0 0 0px transparent) blur(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) skewY(0);
+    }
+}
+
+@keyframes reflectionReveal {
+    from {
+        opacity: 0;
+        transform: rotatex(180deg) translateY(40px) skewY(2deg);
+        filter: drop-shadow(0 0 0px transparent) blur(10px);
+    }
+
+    to {
+        opacity: 0.35;
+        transform: rotatex(180deg) translateY(0) skewY(0);
+    }
+}
+
+@keyframes cornerReveal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* ─── HERO TITLE ─── */
+.hero {
+    user-select: none;
+    white-space: nowrap;
+    text-transform: uppercase;
+
+    /* font-family: 'BebasNeue-Regular';
+    font-size: clamp(50px, 16vw, 220px); */
+
+    font-family: 'SUSE-Variable';
+    font-size: clamp(20px, 11vw, 220px);
+
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+}
+
+.hero-title {
+    opacity: 0;
+    background: linear-gradient(to bottom,
+            #fefce8 0%,
+            #fde68a 15%,
+            #fbbf24 28%,
+            #f97316 40%,
+            #ea580c 52%,
+            #c2410c 62%,
+            #7c3aed 75%,
+            #4c1d95 88%,
+            #1e1b4b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 60px rgba(249, 115, 22, 0.4)) drop-shadow(0 4px 30px rgba(124, 58, 237, 0.3));
+    position: relative;
+    z-index: 12;
+}
+
+/* Reflection of title */
+.hero-title-reflection {
+    opacity: 0;
+    transform: rotatex(180deg);
+    margin-top: -0.21em;
+    /* margin-top: -0.3em; */
+    /* opacity: .35; */
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 80%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 80%);
+    pointer-events: none;
+    z-index: 11;
+    /* animation: reflectionReveal 4s ease-out backwards */
+}
+
+/* ─── CONTENT ─── */
+.content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* min-height: 100vh; */
+    top: 48vh;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* ─── SCENE CANVAS ─── */
+.scene {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}

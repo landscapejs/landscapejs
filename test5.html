@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Daylight Sky</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#000; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    canvas { display:block; border-radius:4px; box-shadow:0 30px 90px rgba(0,0,0,0.75); }
+  </style>
+
+  <!-- SVG filter definitions — zero-size, just holds the filters -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <!-- Back layer: high octaves, strong displacement → loose fluffy edges -->
+      <filter id="cf-back" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="12" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" seed="2" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="160" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <!-- Mid layer: fewer octaves, medium displacement -->
+      <filter id="cf-mid" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="10" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="3" seed="5" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="130" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <!-- Front layer: soft displacement → sharp bright highlights -->
+      <filter id="cf-front" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="2" seed="8" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="90" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+
+      <!-- Unique seeds for each cloud instance (9 clouds × 3 layers = 27 filters) -->
+      <!-- Cloud 2 -->
+      <filter id="cf-back-2"  x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="12" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" seed="11" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="160" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-mid-2"   x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="10" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="3" seed="14" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="130" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-front-2" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="2" seed="17" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="90" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <!-- Cloud 3 -->
+      <filter id="cf-back-3"  x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="12" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="4" seed="23" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="155" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-mid-3"   x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="10" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="3" seed="26" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="125" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-front-3" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="29" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="85" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <!-- Cloud 4 -->
+      <filter id="cf-back-4"  x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="10" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="4" seed="31" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="140" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-mid-4"   x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="3" seed="34" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="110" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-front-4" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="6" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="37" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="75" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <!-- Cloud 5 (small distant) -->
+      <filter id="cf-back-5"  x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="3" seed="41" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="110" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-mid-5"   x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="6" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.017" numOctaves="2" seed="44" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="90" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="cf-front-5" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="5" result="blur"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="47" result="noise"/>
+        <feDisplacementMap in="blur" in2="noise" scale="65" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<script>
+const dpr    = window.devicePixelRatio || 1;
+const canvas = document.getElementById('sky');
+const ctx    = canvas.getContext('2d');
+const CW = 960, CH = 580;
+canvas.width  = CW * dpr;
+canvas.height = CH * dpr;
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+ctx.scale(dpr, dpr);
+
+/* ── Sky gradient ───────────────────────────────────────────────────────── */
+const skyG = ctx.createLinearGradient(0, 0, 0, CH);
+skyG.addColorStop(0.00, '#0c3d7e');
+skyG.addColorStop(0.28, '#1868b8');
+skyG.addColorStop(0.58, '#52a8e2');
+skyG.addColorStop(0.80, '#93cff2');
+skyG.addColorStop(1.00, '#d6eefa');
+ctx.fillStyle = skyG;
+ctx.fillRect(0, 0, CW, CH);
+
+const haze = ctx.createRadialGradient(CW/2, CH+60, 10, CW/2, CH+60, CW*0.95);
+haze.addColorStop(0.0, 'rgba(255,215,130,0.18)');
+haze.addColorStop(1.0, 'rgba(255,255,255,0)');
+ctx.fillStyle = haze;
+ctx.fillRect(0, 0, CW, CH);
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CLOUD ENGINE — feTurbulence + feDisplacementMap technique
+   (Canvas port of the CSS-Tricks / Beau Jackson approach)
+
+   Each cloud = 3 layered passes using SVG filter references:
+     • Back  layer: large displacement, many octaves → soft irregular mass
+     • Mid   layer: medium displacement              → main cloud body
+     • Front layer: small displacement               → bright highlights
+
+   The canvas ctx.filter property accepts url(#svgFilterId) references,
+   so we can apply the full SVG filter pipeline directly when drawing
+   simple ellipses. The turbulence distorts those ellipses into organic,
+   photorealistic cloud shapes — identical to the CSS-Tricks technique.
+══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Draw one cloud using 3 layered SVG filter passes.
+ *
+ * x, y     — centre of the cloud on the canvas
+ * rx, ry   — base ellipse radii (cloud body size)
+ * alpha    — overall cloud opacity (0–1)
+ * suffix   — filter ID suffix ('', '-2', '-3', etc.)
+ */
+function drawCloud(x, y, rx, ry, alpha, suffix = '') {
+  const layers = [
+    // [filterId,      fillColor,            globalAlpha multiplier]
+    [`cf-back${suffix}`,  'rgba(220,235,250,1)',  0.55],
+    [`cf-mid${suffix}`,   'rgba(240,248,255,1)',  0.65],
+    [`cf-front${suffix}`, 'rgba(255,255,255,1)',  0.75],
+  ];
+
+  for (const [filterId, color, layerAlpha] of layers) {
+    ctx.save();
+    ctx.globalAlpha = alpha * layerAlpha;
+    ctx.filter = `url(#${filterId})`;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.filter = 'none';
+    ctx.restore();
+  }
+}
+
+/* ── Cloud scene ────────────────────────────────────────────────────────── */
+
+// Large hero cloud — upper left
+drawCloud(295, 120, 255, 58, 0.72, '');
+
+// // Tall cloud — upper centre-right
+// drawCloud(545, 95, 120, 80, 0.68, '-2');
+
+// // Wide flat cloud — right side
+// drawCloud(820, 130, 105, 55, 0.65, '-3');
+
+// // Medium cloud — mid left
+// drawCloud(340, 210, 88, 50, 0.55, '-4');
+
+// // Small distant cloud — lower right
+// drawCloud(700, 290, 62, 36, 0.42, '-5');
+</script>
+</body>
+</html>

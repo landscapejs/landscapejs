@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Phases</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 50%, #0c0c1e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            color: #a0a0c0;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 300;
+            margin-bottom: 50px;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .phase-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        canvas {
+            border-radius: 50%;
+            margin-bottom: 20px;
+            background: #0a0a1a;
+        }
+
+        .phase-name {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .phase-illumination {
+            color: #a0a0c0;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .phases-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+            }
+            
+            .phase-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="stars" id="starsCanvas"></canvas>
+    
+    <div class="container">
+        <h1>🌙 Moon Phases</h1>
+        <p class="subtitle">Complete cycle of lunar illumination</p>
+        
+        <div class="phases-grid" id="phasesGrid">
+            <!-- Moon phases will be rendered here -->
+        </div>
+    </div>
+
+    <script>
+        // Moon phase data - illumination as strings
+        const moonPhases = [
+            { name: 'New Moon', illumination: '0%', phase: 0 },
+            { name: 'Waxing Crescent', illumination: '25%', phase: 0.25 },
+            { name: 'First Quarter', illumination: '50%', phase: 0.5 },
+            { name: 'Waxing Gibbous', illumination: '75%', phase: 0.75 },
+            { name: 'Full Moon', illumination: '100%', phase: 1 },
+            { name: 'Waning Gibbous', illumination: '75%', phase: 0.75 },
+            { name: 'Last Quarter', illumination: '50%', phase: 0.5 },
+            { name: 'Waning Crescent', illumination: '25%', phase: 0.25 }
+        ];
+
+        // Draw moon phase with proper shadow shapes
+        function drawMoonPhase(canvas, phaseIndex) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size / 2 - 15;
+
+            // Clear canvas with dark background
+            ctx.fillStyle = '#0a0a1a';
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw outer glow
+            const glowGradient = ctx.createRadialGradient(centerX, centerY, radius * 0.7, centerX, centerY, radius * 1.3);
+            glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+            glowGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
+            glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = glowGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 1.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw the dark moon base
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw moon phase based on index
+            drawPhaseShape(ctx, centerX, centerY, radius, phaseIndex);
+        }
+
+        // Draw the actual moon phase shape
+        function drawPhaseShape(ctx, centerX, centerY, radius, phaseIndex) {
+            ctx.save();
+            
+            // Create clipping circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.clip();
+
+            // Moon surface gradient
+            const moonGradient = ctx.createRadialGradient(
+                centerX - radius * 0.25,
+                centerY - radius * 0.25,
+                0,
+                centerX,
+                centerY,
+                radius
+            );
+            moonGradient.addColorStop(0, '#ffffff');
+            moonGradient.addColorStop(0.4, '#e8e8e8');
+            moonGradient.addColorStop(0.7, '#c0c0c0');
+            moonGradient.addColorStop(1, '#9a9a9a');
+
+            // Dark side color
+            const darkColor = '#1a1a2e';
+
+            switch(phaseIndex) {
+                case 0: // New Moon
+                    ctx.fillStyle = darkColor;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+                    // Add subtle rim
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius - 1, 0, Math.PI * 2);
+                    ctx.stroke();
+                    break;
+
+                case 1: // Waxing Crescent (right sliver lit)
+                    // Dark background
+                    ctx.fillStyle = darkColor;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+                    
+                    // Light crescent on right
+                    ctx.fillStyle = moonGradient;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, -Math.PI / 2, Math.PI / 2);
+                    ctx.ellipse(centerX - radius * 0.5, centerY, radius * 0.6, radius, 0, Math.PI / 2, -Math.PI / 2, true);
+                    ctx.fill();
+                    break;
+
+                case 2: // First Quarter (right half lit)
+                    // Dark left half
+                    ctx.fillStyle = darkColor;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius, radius * 2);
+                    
+                    // Light right half
+                    ctx.fillStyle = moonGradient;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, -Math.PI / 2, Math.PI / 2);
+                    ctx.fill();
+                    break;
+
+                case 3: // Waxing Gibbous (mostly lit, left dark sliver)
+                    // Full moon base
+                    ctx.fillStyle = moonGradient;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+                    
+                    // Dark crescent on left
+                    ctx.fillStyle = darkColor;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, Math.PI / 2, -Math.PI / 2, true);
+                    ctx.ellipse(centerX + radius * 0.5, centerY, radius * 0.6, radius, 0, -Math.PI / 2, Math.PI / 2, true);
+                    ctx.fill();
+                    break;
+
+                case 4: // Full Moon
+                    ctx.fillStyle = moonGradient;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+                    drawCraters(ctx, centerX, centerY, radius);
+                    break;
+
+                case 5: // Waning Gibbous (mostly lit, right dark sliver)
+                    // Full moon base
+                    ctx.fillStyle = moonGradient;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+                    
+                    // Dark crescent on right
+                    ctx.fillStyle = darkColor;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, -Math.PI / 2, Math.PI / 2);
+                    ctx.ellipse(centerX - radius * 0.5, centerY, radius * 0.6, radius, 0, Math.PI / 2, -Math.PI / 2, true);
+                    ctx.fill();
+                    break;
+
+                case 6: // Last Quarter (left half lit)
+                    // Dark right half
+                    ctx.fillStyle = darkColor;
+                    ctx.fillRect(centerX, centerY - radius, radius, radius * 2);
+                    
+                    // Light left half
+                    ctx.fillStyle = moonGradient;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, Math.PI / 2, -Math.PI / 2, true);
+                    ctx.fill();
+                    break;
+
+                case 7: // Waning Crescent (left sliver lit)
+                    // Dark background
+                    ctx.fillStyle = darkColor;
+                    ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+                    
+                    // Light crescent on left
+                    ctx.fillStyle = moonGradient;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, Math.PI / 2, -Math.PI / 2, true);
+                    ctx.ellipse(centerX + radius * 0.5, centerY, radius * 0.6, radius, 0, -Math.PI / 2, Math.PI / 2, true);
+                    ctx.fill();
+                    break;
+            }
+
+            ctx.restore();
+
+            // Draw border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // Draw craters on moon surface
+        function drawCraters(ctx, centerX, centerY, radius) {
+            ctx.fillStyle = 'rgba(120, 120, 130, 0.4)';
+            
+            const craters = [
+                { x: -0.3, y: -0.2, r: 0.08 },
+                { x: 0.25, y: 0.25, r: 0.06 },
+                { x: -0.15, y: 0.35, r: 0.05 },
+                { x: 0.35, y: -0.3, r: 0.04 },
+                { x: -0.35, y: 0.1, r: 0.05 },
+                { x: 0.1, y: -0.35, r: 0.04 },
+                { x: -0.2, y: -0.35, r: 0.03 }
+            ];
+
+            craters.forEach(crater => {
+                ctx.beginPath();
+                ctx.arc(
+                    centerX + crater.x * radius,
+                    centerY + crater.y * radius,
+                    crater.r * radius,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            });
+        }
+
+        // Create starfield background
+        function createStarfield() {
+            const canvas = document.getElementById('starsCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            ctx.fillStyle = '#0c0c1e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stars
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 2 + 0.5;
+                const opacity = Math.random() * 0.8 + 0.2;
+
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Initialize moon phases
+        function initMoonPhases() {
+            const grid = document.getElementById('phasesGrid');
+            
+            moonPhases.forEach((moon, index) => {
+                const card = document.createElement('div');
+                card.className = 'phase-card';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 180;
+
+                const name = document.createElement('div');
+                name.className = 'phase-name';
+                name.textContent = moon.name;
+
+                const illumination = document.createElement('div');
+                illumination.className = 'phase-illumination';
+                illumination.textContent = `${moon.illumination} Illuminated`;
+
+                card.appendChild(canvas);
+                card.appendChild(name);
+                card.appendChild(illumination);
+                grid.appendChild(card);
+
+                drawMoonPhase(canvas, index);
+            });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            createStarfield();
+        });
+
+        // Initialize
+        createStarfield();
+        initMoonPhases();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+{
+  "name": "@binarystarstudio/landscapejs",
+  "version": "0.0.8",
+  "description": "Create unique generative landscapes in vanilla javascript",
+  "keywords": [
+    "generative",
+    "art",
+    "landscape"
+  ],
+  "homepage": "https://landscapejs.github.io",
+  "bugs": {
+    "url": "https://github.com/landscapejs/landscapejs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/landscapejs/landscapejs.git"
+  },
+  "license": "ISC",
+  "author": "Binary Star Studio",
+  "type": "module",
+  "files": [
+    "dist/lib"
+  ],
+  "main": "dist/lib/landscape.js",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/landscape.js",
+      "require": "./dist/lib/landscape.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --config vite.lib.config.ts && vite build",
+    "preview": "vite preview",
+    "publish": "vite build && node updateVersion.js && ./publish.sh"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "tailwindcss": "^4.2.1",
+    "vite": "^7.2.4"
+  }
+}

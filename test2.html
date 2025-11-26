@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Phases</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #04050d;
+            color: #d8cfc4;
+            font-family: 'Cormorant Garamond', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* star field */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 10% 15%, rgba(255, 255, 255, .55) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 60%, rgba(255, 255, 255, .35) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 40% 30%, rgba(255, 255, 255, .45) 0%, transparent 100%),
+                radial-gradient(1px 1px at 55% 80%, rgba(255, 255, 255, .30) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 10%, rgba(255, 255, 255, .50) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 80% 50%, rgba(255, 255, 255, .40) 0%, transparent 100%),
+                radial-gradient(1px 1px at 90% 90%, rgba(255, 255, 255, .35) 0%, transparent 100%),
+                radial-gradient(1px 1px at 15% 85%, rgba(255, 255, 255, .45) 0%, transparent 100%),
+                radial-gradient(1px 1px at 60% 45%, rgba(255, 255, 255, .30) 0%, transparent 100%),
+                radial-gradient(1px 1px at 35% 95%, rgba(255, 255, 255, .40) 0%, transparent 100%),
+                radial-gradient(1px 1px at 48% 20%, rgba(255, 255, 255, .55) 0%, transparent 100%),
+                radial-gradient(1px 1px at 75% 70%, rgba(255, 255, 255, .35) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 5% 45%, rgba(255, 255, 255, .40) 0%, transparent 100%),
+                radial-gradient(1px 1px at 92% 30%, rgba(255, 255, 255, .45) 0%, transparent 100%),
+                radial-gradient(1px 1px at 18% 38%, rgba(255, 255, 255, .30) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 52px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .eyebrow {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: .35em;
+            color: #8a7f72;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(26px, 4vw, 44px);
+            font-weight: 600;
+            letter-spacing: .08em;
+            color: #ece6dd;
+            line-height: 1.15;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-style: italic;
+            font-size: clamp(13px, 1.5vw, 16px);
+            color: #8a7f72;
+            letter-spacing: .02em;
+        }
+
+        .divider {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #8a7f72 40%, transparent);
+            margin: 16px auto 0;
+        }
+
+        /* grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px 24px;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 700px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 28px 16px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px 12px;
+            }
+        }
+
+        .phase-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            animation: fadeUp .6s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .phase-card canvas {
+            display: block;
+            filter: drop-shadow(0 0 18px rgba(200, 190, 160, .18));
+            transition: filter .35s ease, transform .35s ease;
+            cursor: default;
+        }
+
+        .phase-card:hover canvas {
+            filter: drop-shadow(0 0 30px rgba(220, 210, 175, .38));
+            transform: translateY(-3px) scale(1.04);
+        }
+
+        .phase-label {
+            text-align: center;
+        }
+
+        .phase-label strong {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(9px, 1.2vw, 11px);
+            letter-spacing: .2em;
+            color: #c8bfb2;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .phase-label span {
+            font-style: italic;
+            font-size: clamp(11px, 1.4vw, 13px);
+            color: #8a7f72;
+            letter-spacing: .02em;
+        }
+
+        footer {
+            margin-top: 54px;
+            font-size: 11px;
+            letter-spacing: .1em;
+            color: #4a4540;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            z-index: 1;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <p class="eyebrow">A Lunar Almanac</p>
+        <h1>The Eight Moon Phases</h1>
+        <p>As seen from the Northern Hemisphere</p>
+        <div class="divider"></div>
+    </header>
+
+    <div class="grid" id="phaseGrid"></div>
+
+    <footer>Synodic period · 29.5 days</footer>
+
+    <script>
+        const PHASES = [
+            { name: "New Moon", sub: "0% illuminated", lit: 0, waxing: true },
+            { name: "Waxing Crescent", sub: "~25% illuminated", lit: 0.25, waxing: true },
+            { name: "First Quarter", sub: "50% illuminated", lit: 0.50, waxing: true },
+            { name: "Waxing Gibbous", sub: "~75% illuminated", lit: 0.75, waxing: true },
+            { name: "Full Moon", sub: "100% illuminated", lit: 1, waxing: true },
+            { name: "Waning Gibbous", sub: "~75% illuminated", lit: 0.75, waxing: false },
+            { name: "Last Quarter", sub: "50% illuminated", lit: 0.50, waxing: false },
+            { name: "Waning Crescent", sub: "~25% illuminated", lit: 0.25, waxing: false },
+        ];
+
+        // ─────────────────────────────────────────────────────────────────
+        // Moon phase rendering — clean path-based approach.
+        //
+        // The lit shape is ALWAYS defined by exactly two curves:
+        //   1. The LIMB  — the outer circle arc on the lit side
+        //   2. The TERMINATOR — an ellipse arc connecting the same top/bottom points
+        //
+        // Key insight:
+        //   • terminator x-radius = R * |cos(π * lit)|
+        //   • For crescent (lit < 0.5): terminator bulges TOWARD the lit side
+        //     → we trace it in the direction that carves out a sliver
+        //   • For gibbous  (lit > 0.5): terminator bulges TOWARD the dark side
+        //     → we trace it in the direction that keeps the fat portion
+        //   • Waxing: lit side is RIGHT  (limb is the right semicircle)
+        //   • Waning: lit side is LEFT   (limb is the left semicircle)
+        //
+        // We draw the path using ctx.ellipse() for the terminator.
+        // The terminator center is always (cx, cy), with rx=tx, ry=R.
+        // ─────────────────────────────────────────────────────────────────
+        //
+        // Strategy: draw everything on an offscreen canvas, then blit.
+        //   1. Fill a full disc with the "lit" surface texture.
+        //   2. Use destination-out compositing to erase the dark (unlit) half.
+        //      • For crescent: erase the full opposite-side semicircle, THEN
+        //        restore (destination-over) the inner terminator ellipse.
+        //      • For gibbous:  erase only the terminator-side ellipse sliver.
+        //   3. The terminator ellipse x-radius = R * |cos(π * lit)|
+        //      – at lit=0.25 → cos(45°)≈0.707  → narrow crescent
+        //      – at lit=0.50 → cos(90°)=0      → straight line (quarter)
+        //      – at lit=0.75 → cos(135°)≈0.707 → wide gibbous notch
+        // ─────────────────────────────────────────────────────────────────
+        function drawMoon(canvas, phase) {
+            const dpr = window.devicePixelRatio || 1;
+            const size = canvas.getBoundingClientRect().width || 100;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            const cx = size / 2;
+            const cy = size / 2;
+            const R = size * 0.44;
+
+            const { lit, waxing } = phase;
+            const isNew = lit === 0;
+            const isFull = lit === 1;
+
+            // ── glow behind disc ──
+            const glow = ctx.createRadialGradient(cx, cy, R * 0.3, cx, cy, R * 1.7);
+            glow.addColorStop(0, 'rgba(180,165,130,0.06)');
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, size, size);
+
+            // ── clip everything to the moon disc ──
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, Math.PI * 2);
+            ctx.clip();
+
+            // ── 1. Dark base fills the whole disc ──
+            const darkGrad = ctx.createRadialGradient(cx, cy - R * 0.1, R * 0.05, cx, cy, R);
+            darkGrad.addColorStop(0, '#2e2c26');
+            darkGrad.addColorStop(0.5, '#181710');
+            darkGrad.addColorStop(1, '#0c0b08');
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, Math.PI * 2);
+            ctx.fillStyle = darkGrad;
+            ctx.fill();
+
+            // ── 2. Draw the lit shape ──
+            if (!isNew) {
+                // Terminator ellipse x-radius
+                const tx = R * Math.abs(Math.cos(Math.PI * lit));
+                const isGibbous = lit > 0.5;
+
+                // We build a closed path for the lit region.
+                // Convention for arc angles (canvas): 0=right, π/2=bottom, π=left, -π/2=top
+                //
+                // The two anchor points (where limb meets terminator) are ALWAYS:
+                //   top:    (cx,     cy - R)
+                //   bottom: (cx,     cy + R)
+                //
+                // LIMB arc: the outer circle, traced on the lit side
+                //   Waxing (right lit): top → bottom going CLOCKWISE through the right  (startAngle=-π/2, endAngle=π/2, ccw=false)
+                //   Waning (left  lit): top → bottom going COUNTER-CLOCKWISE through left (startAngle=-π/2, endAngle=π/2 going left = π/2→-π/2 ccw... easier: -π/2 → π/2 anticlockwise = through left)
+                //
+                // TERMINATOR arc: the ellipse cx,cy with rx=tx, ry=R
+                //   Crescent (lit<0.5): terminator bows toward lit side.
+                //     The ellipse is centred at cx. Its arc from bottom→top on the DARK side creates the concave edge.
+                //     Waxing crescent: terminator on the LEFT side of the disc → use the LEFT half of the ellipse
+                //       bottom=(cx, cy+R) at angle=π/2 on ellipse → top=(cx, cy-R) at angle=-π/2
+                //       Going counter-clockwise (through the left bulge of the ellipse) gives the dark-side arc.
+                //       But we want the arc that bows toward the RIGHT (lit side): go CLOCKWISE from bottom→top.
+                //     Actually: for a waxing crescent, the terminator bows LEFT (toward dark).
+                //       Wait — let's think visually: waxing crescent = thin sliver on the RIGHT.
+                //       The terminator is a curve that goes from top to bottom but bows to the LEFT.
+                //       On the terminator ellipse (centered at cx): going from top(-π/2) to bottom(π/2)
+                //       counter-clockwise passes through the LEFT side (negative x) — that's the correct terminator curve.
+                //
+                // Let's define:
+                //   limbArc:        ctx.arc(cx, cy, R, -π/2, π/2, waning)   — right half if waxing, left if waning
+                //   termArc (cres): ctx.ellipse(cx, cy, tx, R, 0, π/2, -π/2, waxing)  — bottom→top, bowing dark side
+                //   termArc (gibb): ctx.ellipse(cx, cy, tx, R, 0, π/2, -π/2, !waxing) — bottom→top, bowing lit side
+
+                ctx.beginPath();
+
+                if (isFull) {
+                    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+                } else {
+                    // Start at top anchor (cx, cy-R)
+                    ctx.moveTo(cx, cy - R);
+
+                    // LIMB: arc along outer circle from top to bottom on the lit side
+                    if (waxing) {
+                        // Right side lit: go clockwise from -π/2 to +π/2  (through right)
+                        ctx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);
+                    } else {
+                        // Left side lit: go counter-clockwise from -π/2 to +π/2 (through left)
+                        ctx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, true);
+                    }
+                    // Now at bottom anchor (cx, cy+R)
+
+                    // TERMINATOR: ellipse arc from bottom back to top
+                    if (!isGibbous) {
+                        // CRESCENT: terminator bows toward the DARK side
+                        // Waxing crescent: dark is left → terminator bows left → CCW on ellipse (left half)
+                        // Waning crescent: dark is right → terminator bows right → CW on ellipse (right half)
+                        ctx.ellipse(cx, cy, tx, R, 0, Math.PI / 2, -Math.PI / 2, waxing);
+                    } else {
+                        // GIBBOUS: terminator bows toward the LIT side
+                        // Waxing gibbous: lit is right → terminator bows right → CW on ellipse (right half)
+                        // Waning gibbous: lit is left → terminator bows left → CCW on ellipse (left half)
+                        ctx.ellipse(cx, cy, tx, R, 0, Math.PI / 2, -Math.PI / 2, !waxing);
+                    }
+
+                    ctx.closePath();
+                }
+
+                // Fill with lit surface gradient
+                const lightGrad = ctx.createRadialGradient(cx - R * 0.1, cy - R * 0.25, R * 0.05, cx, cy, R);
+                if (isFull) {
+                    lightGrad.addColorStop(0, '#f5f0e8');
+                    lightGrad.addColorStop(0.4, '#ddd4c0');
+                    lightGrad.addColorStop(0.78, '#c2b89f');
+                    lightGrad.addColorStop(1, '#9a9080');
+                } else {
+                    lightGrad.addColorStop(0, '#ede4d4');
+                    lightGrad.addColorStop(0.5, '#cec3ae');
+                    lightGrad.addColorStop(1, '#a09080');
+                }
+                ctx.fillStyle = lightGrad;
+                ctx.fill();
+
+                // Mare markings — painted within the lit shape
+                ctx.save();
+                // Re-clip to lit shape so mares don't spill onto dark side
+                ctx.beginPath();
+                if (isFull) {
+                    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+                } else {
+                    ctx.moveTo(cx, cy - R);
+                    if (waxing) {
+                        ctx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);
+                    } else {
+                        ctx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, true);
+                    }
+                    if (!isGibbous) {
+                        ctx.ellipse(cx, cy, tx, R, 0, Math.PI / 2, -Math.PI / 2, waxing);
+                    } else {
+                        ctx.ellipse(cx, cy, tx, R, 0, Math.PI / 2, -Math.PI / 2, !waxing);
+                    }
+                    ctx.closePath();
+                }
+                ctx.clip();
+
+                ctx.globalAlpha = 0.09;
+                const mares = [
+                    { dx: -0.17, dy: -0.12, rx: 0.21, ry: 0.13, a: 0.3 },
+                    { dx: 0.09, dy: 0.05, rx: 0.15, ry: 0.10, a: 0.5 },
+                    { dx: 0.13, dy: 0.24, rx: 0.12, ry: 0.08, a: 0.2 },
+                    { dx: -0.07, dy: 0.27, rx: 0.09, ry: 0.07, a: 0.1 },
+                    { dx: -0.28, dy: 0.16, rx: 0.11, ry: 0.07, a: 0.4 },
+                ];
+                mares.forEach(m => {
+                    ctx.beginPath();
+                    ctx.ellipse(cx + m.dx * R, cy + m.dy * R, m.rx * R, m.ry * R, m.a, 0, Math.PI * 2);
+                    ctx.fillStyle = '#3a3020';
+                    ctx.fill();
+                });
+                ctx.globalAlpha = 1;
+                ctx.restore();
+            }
+
+            ctx.restore(); // end disc clip
+
+            // ── Outer limb ring ──
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, Math.PI * 2);
+            ctx.strokeStyle = isNew ? 'rgba(150,140,120,0.30)' : 'rgba(200,190,165,0.14)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // ── Earthshine on new moon ──
+            if (isNew) {
+                const es = ctx.createRadialGradient(cx, cy, R * 0.5, cx, cy, R * 1.1);
+                es.addColorStop(0, 'rgba(90,110,160,0.09)');
+                es.addColorStop(1, 'transparent');
+                ctx.fillStyle = es;
+                ctx.beginPath();
+                ctx.arc(cx, cy, R * 1.05, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // ── Build the grid ──
+        const grid = document.getElementById('phaseGrid');
+        const CARD_SIZE = Math.min(160, Math.floor((Math.min(window.innerWidth, 900) - 24 * 3) / 4));
+        const cardSizePx = Math.max(90, CARD_SIZE);
+
+        PHASES.forEach((phase, i) => {
+            const card = document.createElement('div');
+            card.className = 'phase-card';
+            card.style.animationDelay = `${i * 0.07}s`;
+
+            const canvas = document.createElement('canvas');
+            canvas.style.width = cardSizePx + 'px';
+            canvas.style.height = cardSizePx + 'px';
+
+            const label = document.createElement('div');
+            label.className = 'phase-label';
+            label.innerHTML = `<strong>${phase.name}</strong><span>${phase.sub}</span>`;
+
+            card.appendChild(canvas);
+            card.appendChild(label);
+            grid.appendChild(card);
+
+            requestAnimationFrame(() => drawMoon(canvas, phase));
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                document.querySelectorAll('.phase-card canvas').forEach((c, i) => drawMoon(c, PHASES[i]));
+            }, 120);
+        });
+    </script>
+</body>
+
+</html>
