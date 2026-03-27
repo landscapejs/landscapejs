@@ -1,7 +1,7 @@
 {
   "name": "@binarystarstudio/landscapejs",
-  "version": "0.0.8",
-  "description": "Create unique generative landscapes in vanilla javascript",
+  "version": "0.0.21",
+  "description": "Create unique generative landscapes",
   "keywords": [
     "generative",
     "art",
@@ -36,7 +36,14 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.1",
+    "daisyui": "^5.5.19",
     "tailwindcss": "^4.2.1",
-    "vite": "^7.2.4"
-  }
+    "terser": "^5.46.1",
+    "vite": "^7.2.4",
+    "vite-plugin-compression2": "^2.5.3",
+    "vite-plugin-html": "^3.2.2",
+    "@tailwindplus/elements": "^1.0.22",
+    "lz-string": "^1.5.0"
+  },
+  "dependencies": {}
 }

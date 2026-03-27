@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Configuration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom toggle switch styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #3b82f6;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #3b82f6;
+        }
+        
+        /* Custom range slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Vertical slider container */
+        .vertical-slider-container {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        input[type="range"].vertical {
+            -webkit-appearance: slider-vertical;
+            writing-mode: bt-lr;
+            width: 8px;
+            height: 200px;
+        }
+        
+        /* Custom color picker */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            cursor: pointer;
+            overflow: hidden;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 12px;
+        }
+        
+        input[type="color"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Slider value display */
+        .slider-value {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+
+        <!-- Main Form Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 space-y-10">
+            
+            <!-- Row 1: Toggles -->
+            <div class="border-b border-slate-200 pb-8">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                    </svg>
+                    Toggle Options
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Toggle 1 -->
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                        <span class="text-slate-700 font-medium">Toggle 1</span>
+                        <div class="relative inline-block w-12 h-6">
+                            <input type="checkbox" id="toggle1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-300 appearance-none cursor-pointer transition-all duration-300 checked:right-0 checked:border-blue-500" style="right: 0;">
+                            <label for="toggle1" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                    
+                    <!-- Toggle 2 -->
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                        <span class="text-slate-700 font-medium">Toggle 2</span>
+                        <div class="relative inline-block w-12 h-6">
+                            <input type="checkbox" id="toggle2" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-300 appearance-none cursor-pointer transition-all duration-300 checked:right-0 checked:border-blue-500" style="right: 0;">
+                            <label for="toggle2" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                    
+                    <!-- Toggle 3 -->
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                        <span class="text-slate-700 font-medium">Toggle 3</span>
+                        <div class="relative inline-block w-12 h-6">
+                            <input type="checkbox" id="toggle3" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-300 appearance-none cursor-pointer transition-all duration-300 checked:right-0 checked:border-blue-500" style="right: 0;">
+                            <label for="toggle3" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                    
+                    <!-- Toggle 4 -->
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                        <span class="text-slate-700 font-medium">Toggle 4</span>
+                        <div class="relative inline-block w-12 h-6">
+                            <input type="checkbox" id="toggle4" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-300 appearance-none cursor-pointer transition-all duration-300 checked:right-0 checked:border-blue-500" style="right: 0;">
+                            <label for="toggle4" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Horizontal Sliders -->
+            <div class="border-b border-slate-200 pb-8">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    Horizontal Sliders
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Slide 1 -->
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <input type="range" id="slide1" min="0" max="100" value="50" class="w-full h-2 rounded-full appearance-none cursor-pointer" 
+                            oninput="document.getElementById('slide1Value').textContent = this.value">
+                        <div class="text-center mt-3">
+                            <span class="text-sm font-medium text-slate-600">Slide 1</span>
+                            <div class="text-xs text-slate-400 slider-value">Value: <span id="slide1Value">50</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 2 -->
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <input type="range" id="slide2" min="0" max="100" value="50" class="w-full h-2 rounded-full appearance-none cursor-pointer" 
+                            oninput="document.getElementById('slide2Value').textContent = this.value">
+                        <div class="text-center mt-3">
+                            <span class="text-sm font-medium text-slate-600">Slide 2</span>
+                            <div class="text-xs text-slate-400 slider-value">Value: <span id="slide2Value">50</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 3 -->
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <input type="range" id="slide3" min="0" max="100" value="50" class="w-full h-2 rounded-full appearance-none cursor-pointer" 
+                            oninput="document.getElementById('slide3Value').textContent = this.value">
+                        <div class="text-center mt-3">
+                            <span class="text-sm font-medium text-slate-600">Slide 3</span>
+                            <div class="text-xs text-slate-400 slider-value">Value: <span id="slide3Value">50</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Vertical Sliders -->
+            <div class="border-b border-slate-200 pb-8">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                    </svg>
+                    Vertical Sliders
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                    <!-- Slide 4 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <div class="vertical-slider-container relative">
+                            <input type="range" id="slide4" min="0" max="100" value="50" orient="vertical" 
+                                class="vertical w-2 h-48 rounded-full appearance-none cursor-pointer"
+                                style="writing-mode: vertical-lr; direction: rtl;"
+                                oninput="document.getElementById('slide4Value').textContent = this.value">
+                        </div>
+                        <div class="text-center mt-3">
+                            <span class="text-sm font-medium text-slate-600">Slide 4</span>
+                            <div class="text-xs text-slate-400 slider-value">Value: <span id="slide4Value">50</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 5 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <div class="vertical-slider-container relative">
+                            <input type="range" id="slide5" min="0" max="100" value="50" orient="vertical" 
+                                class="vertical w-2 h-48 rounded-full appearance-none cursor-pointer"
+                                style="writing-mode: vertical-lr; direction: rtl;"
+                                oninput="document.getElementById('slide5Value').textContent = this.value">
+                        </div>
+                        <div class="text-center mt-3">
+                            <span class="text-sm font-medium text-slate-600">Slide 5</span>
+                            <div class="text-xs text-slate-400 slider-value">Value: <span id="slide5Value">50</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Slide 6 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <div class="vertical-slider-container relative">
+                            <input type="range" id="slide6" min="0" max="100" value="50" orient="vertical" 
+                                class="vertical w-2 h-48 rounded-full appearance-none cursor-pointer"
+                                style="writing-mode: vertical-lr; direction: rtl;"
+                                oninput="document.getElementById('slide6Value').textContent = this.value">
+                        </div>
+                        <div class="text-center mt-3">
+                            <span class="text-sm font-medium text-slate-600">Slide 6</span>
+                            <div class="text-xs text-slate-400 slider-value">Value: <span id="slide6Value">50</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 4: Color Pickers -->
+            <div>
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                    </svg>
+                    Color Pickers
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                    <!-- Color 1 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <input type="color" id="color1" value="#3b82f6" class="mb-3">
+                        <span class="text-sm font-medium text-slate-600">Color 1</span>
+                        <span class="text-xs text-slate-400 font-mono" id="color1Hex">#3b82f6</span>
+                    </div>
+                    
+                    <!-- Color 2 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <input type="color" id="color2" value="#10b981" class="mb-3">
+                        <span class="text-sm font-medium text-slate-600">Color 2</span>
+                        <span class="text-xs text-slate-400 font-mono" id="color2Hex">#10b981</span>
+                    </div>
+                    
+                    <!-- Color 3 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <input type="color" id="color3" value="#f59e0b" class="mb-3">
+                        <span class="text-sm font-medium text-slate-600">Color 3</span>
+                        <span class="text-xs text-slate-400 font-mono" id="color3Hex">#f59e0b</span>
+                    </div>
+                    
+                    <!-- Color 4 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <input type="color" id="color4" value="#ef4444" class="mb-3">
+                        <span class="text-sm font-medium text-slate-600">Color 4</span>
+                        <span class="text-xs text-slate-400 font-mono" id="color4Hex">#ef4444</span>
+                    </div>
+                    
+                    <!-- Color 5 -->
+                    <div class="flex flex-col items-center p-4 bg-slate-50 rounded-xl">
+                        <input type="color" id="color5" value="#8b5cf6" class="mb-3">
+                        <span class="text-sm font-medium text-slate-600">Color 5</span>
+                        <span class="text-xs text-slate-400 font-mono" id="color5Hex">#8b5cf6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-8 text-center">
+            <button onclick="saveSettings()" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                Save Settings
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+

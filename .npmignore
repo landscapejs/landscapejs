@@ -1,3 +1,6 @@
 *
 !dist/landscape.js
 !dist/landscape.ts
+!dist/landscape.js.br
+!dist/landscape.js.gz
+!dist/landscape.umd.cjs
